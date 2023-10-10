@@ -1,48 +1,30 @@
+@Library('mylibrary1')_
 pipeline
 {
     agent any
     stages
     {
-        stage('ContinuousDownload')
+        stage('continousdownload_loans')
         {
             steps
             {
-                git 'https://github.com/amarsrinu/amar9876.git'
-            }
-        }
-        stage('ContinuousBuild')
-        {
-            steps
+                script
             {
-                sh 'mvn package'
+                cicd.newDownload("maven")
             }
-        }
-        stage('ContinuousDeployment')
-        {
-            steps
-            {
-                
-                sh 'scp /var/lib/jenkins/workspace/declarativepipelinereadable/webapp/target/webapp.war ubuntu@172.31.34.221:/var/lib/tomcat9/webapps/testapp.war'
             }
-        }
-        stage('ContinuousTesting')
-        {
-            steps
-            {
-                git 'https://github.com/intelliqittrainings/FunctionalTesting.git'
-                sh "java -jar /var/lib/jenkins/workspace/declarativepipelinereadable/testing.jar"
-            }
-        }
-        stage('ContinuosuDelivery')
-        {
-            steps
-            {
-                sh 'scp /var/lib/jenkins/workspace/declarativepipelinereadable/webapp/target/webapp.war ubuntu@172.31.35.28:/var/lib/tomcat9/webapps/prodapp.war'
-            }
-        }    
-             
-        
-        
-    }
-}
 
+        }
+        stage('continousbuild_loans')
+        {
+            steps
+            {
+                script
+            {
+                cicd.newBuild()
+            }
+            }
+
+        }
+     }
+}
