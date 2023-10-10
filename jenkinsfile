@@ -1,48 +1,68 @@
+
+@Library('mylibrary1')_
 pipeline
 {
     agent any
     stages
     {
-        stage('ContinuousDownload')
+        stage('continousdownload_master')
         {
             steps
             {
-                git 'https://github.com/amarsrinu/amar9876.git'
+                script
+            {
+                cicd.newDownload("maven")
             }
-        }
-        stage('ContinuousBuild')
-        {
-            steps
-            {
-                sh 'mvn package'
             }
+            
         }
-        stage('ContinuousDeployment')
+        stage('continousbuild_master')
         {
             steps
             {
+                script
+            {
+                cicd.newBuild()
+            }
+            }
+            
+        }
+        stage('continousdeployment_master')
+        {
+            steps
+            {
+                script
+            {
+                cicd.newDeploy("declarativepipelinereadable","172.31.34.221","testapp")
                 
-                sh 'scp /var/lib/jenkins/workspace/declarativepipelinereadable/webapp/target/webapp.war ubuntu@172.31.34.221:/var/lib/tomcat9/webapps/testapp.war'
             }
+            }
+            
         }
-        stage('ContinuousTesting')
+        stage('continoustesting_master')
         {
             steps
             {
-                git 'https://github.com/intelliqittrainings/FunctionalTesting.git'
-                sh "java -jar /var/lib/jenkins/workspace/declarativepipelinereadable/testing.jar"
+                script
+            {
+                cicd.newDownload("FunctionalTesting.git")
+                cicd.runSelenium("declarativepipelinereadable")
+                
             }
+            }
+            
         }
-        stage('ContinuosuDelivery')
+        stage('continousdeleivery_master')
         {
             steps
             {
-                sh 'scp /var/lib/jenkins/workspace/declarativepipelinereadable/webapp/target/webapp.war ubuntu@172.31.35.28:/var/lib/tomcat9/webapps/prodapp.war'
+                script
+            {
+                cicd.newDeploy("declarativepipelinereadable","172.31.35.28","prodapp")
             }
-        }    
-             
-        
+            }
+            
+        }
         
     }
 }
-
